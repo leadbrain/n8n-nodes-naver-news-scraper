@@ -1,0 +1,36 @@
+{
+	"node": "n8n-nodes-naver-news-scraper",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": [
+		"Marketing & Content",
+		"Data & Storage"
+	],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://docs.apify.com/platform/integrations/n8n"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://apify.com/oxygenated_quagmire/naver-news-scraper"
+			}
+		]
+	},
+	"alias": [
+		"apify",
+		"naver",
+		"korean",
+		"korea",
+		"news",
+		"scraper",
+		"naver news",
+		"korean news",
+		"네이버",
+		"뉴스",
+		"web scraping",
+		"data extraction",
+		"south korea"
+	]
+}
