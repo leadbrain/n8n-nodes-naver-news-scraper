@@ -1,0 +1,103 @@
+{
+  "name": "Naver Place Reviews → Email (Business Review Monitoring)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Daily",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "actorId": "oxygenated_quagmire/naver-place-reviews",
+        "runInput": "={{ JSON.stringify({ placeUrl: 'YOUR_NAVER_PLACE_URL', maxReviews: 20, sortBy: 'latest' }) }}",
+        "options": {}
+      },
+      "id": "apify-reviews",
+      "name": "Naver Place Reviews",
+      "type": "n8n-nodes-base.apify",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "credentials": {
+        "apifyApi": {
+          "id": "YOUR_APIFY_CREDENTIALS_ID",
+          "name": "Apify API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "toEmail": "your-email@example.com",
+        "subject": "=Daily Naver Place Reviews - {{ new Date().toLocaleDateString('ko-KR') }}",
+        "emailType": "html",
+        "html": "=<h2>📍 New Reviews Today</h2>\n<table border='1' cellpadding='8' style='border-collapse:collapse'>\n<tr><th>Rating</th><th>Author</th><th>Review</th><th>Date</th></tr>\n{{ $json.reviews ? $json.reviews.map(r => `<tr><td>${'⭐'.repeat(r.rating)}</td><td>${r.author}</td><td>${r.text?.substring(0,100)}...</td><td>${r.date}</td></tr>`).join('') : '<tr><td colspan=\"4\">No new reviews</td></tr>' }}\n</table>"
+      },
+      "id": "email",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [680, 300],
+      "credentials": {
+        "smtp": {
+          "id": "YOUR_SMTP_CREDENTIALS_ID",
+          "name": "SMTP"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Daily": {
+      "main": [
+        [
+          {
+            "node": "Naver Place Reviews",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Naver Place Reviews": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "Korean Data",
+      "createdAt": "2026-03-20T06:00:00.000Z",
+      "updatedAt": "2026-03-20T06:00:00.000Z"
+    },
+    {
+      "name": "Review Monitoring",
+      "createdAt": "2026-03-20T06:00:00.000Z",
+      "updatedAt": "2026-03-20T06:00:00.000Z"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-20T06:00:00.000Z",
+  "versionId": "1"
+}

@@ -1,0 +1,117 @@
+{
+  "name": "Naver News → Google Sheets (Korean News Monitoring)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Every Hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "actorId": "oxygenated_quagmire/naver-news-scraper",
+        "runInput": "={{ JSON.stringify({ mode: 'search', keyword: $json.keyword || '삼성전자', sort: 'newest', period: '1h', maxResults: 10, fetchDetails: true }) }}",
+        "options": {}
+      },
+      "id": "apify-naver-news",
+      "name": "Naver News Scraper",
+      "type": "n8n-nodes-base.apify",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "credentials": {
+        "apifyApi": {
+          "id": "YOUR_APIFY_CREDENTIALS_ID",
+          "name": "Apify API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "YOUR_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Sheet1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "title": "={{ $json.title }}",
+            "press": "={{ $json.press }}",
+            "date": "={{ $json.date }}",
+            "link": "={{ $json.link }}",
+            "summary": "={{ $json.summary }}",
+            "category": "={{ $json.category }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "google-sheets",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [680, 300],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_GOOGLE_CREDENTIALS_ID",
+          "name": "Google Sheets"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Every Hour": {
+      "main": [
+        [
+          {
+            "node": "Naver News Scraper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Naver News Scraper": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "Korean Data",
+      "createdAt": "2026-03-20T06:00:00.000Z",
+      "updatedAt": "2026-03-20T06:00:00.000Z"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-20T06:00:00.000Z",
+  "versionId": "1"
+}
